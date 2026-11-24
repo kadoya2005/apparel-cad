@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>イラレCAD</title>
-<link rel="stylesheet" href="style.css?v=5">
+<title>アパレルCAD</title>
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <header id="topbar">
-  <div class="brand">イラレCAD <span class="ver">2D 試作</span></div>
+  <div class="brand">アパレルCAD <span class="ver">ver 6・型紙の試作</span></div>
   <div class="menu">
     <button data-cmd="new">新規</button>
     <button data-cmd="open" title="Ctrl+O">開く</button>
     <button data-cmd="save" title="Ctrl+S">保存</button>
     <button data-cmd="saveAs" title="Ctrl+Shift+S">別名で保存</button>
     <button data-cmd="exportSvg" title="Ctrl+Alt+E　イラレで開ける SVG にする">SVG書き出し</button>
+    <button data-cmd="exportAama" title="型紙を AAMA DXF（mm）にする。CREACOMPO II などの型紙CADで開ける形式">AAMA DXF書き出し</button>
     <span class="sep"></span>
     <div class="mwrap"><button data-menu="object">オブジェクト ▾</button><div class="dropdown" id="menu-object" hidden></div></div>
     <div class="mwrap"><button data-menu="view">表示 ▾</button><div class="dropdown" id="menu-view" hidden></div></div>
@@ -78,6 +79,16 @@
 </main>
 
 <aside id="panels">
+  <section>
+    <h2>型紙 <button id="btnPatSample" class="small" title="タイトスカートの前・後ろの見本を開く">見本を開く</button></h2>
+    <div class="row"><label>線</label><select id="patRole" title="選んでいるパスの役割（AAMA DXF の画層になる）"></select></div>
+    <div class="row"><label>名前</label><input type="text" id="patName" placeholder="パーツ名（例：前スカート）" title="選んでいる型紙（グループ）の名前"></div>
+    <div class="row"><label>枚数</label><input type="number" id="patQty" min="1" step="1" title="裁断する枚数"></div>
+    <div class="row"><label>合印</label><select id="patNotchMode" title="ノッチの書き出し方"><option value="point">点（AAMA の標準）</option><option value="line">線（切り込みの向きつき）</option></select></div>
+    <div class="row"><label>文字</label><select id="patEncoding" title="パーツ名などの文字コード"><option value="sjis">Shift_JIS（日本語の名前）</option><option value="utf8">UTF-8</option></select></div>
+    <div class="row"><button id="btnAama" class="primary" title="型紙を AAMA DXF（mm）にする">AAMA DXF 書き出し</button></div>
+    <p class="note">1つのグループが1枚の型紙です。役割を決めていないときは、いちばん大きい閉じたパスが輪郭、ほかは内部線になります</p>
+  </section>
   <section>
     <h2>塗りと線</h2>
     <div class="row"><label>塗り</label><input type="color" id="inFill"><button id="fillNone" class="small">なし</button></div>
@@ -200,33 +211,36 @@
   ui     … マウス・キーボード・パネル・ダイアログ
   io     … ファイルとクリップボード
 -->
-<script src="js/vendor/paper-core.min.js?v=5"></script>
-<script src="js/vendor/clipper.js?v=5"></script>
-<script src="js/core/geom.js?v=5"></script>
-<script src="js/core/config.js?v=5"></script>
-<script src="js/core/state.js?v=5"></script>
-<script src="js/core/document.js?v=5"></script>
-<script src="js/core/selection.js?v=5"></script>
-<script src="js/core/history.js?v=5"></script>
-<script src="js/core/prefs.js?v=5"></script>
-<script src="js/core/snap.js?v=5"></script>
-<script src="js/core/pathfinder.js?v=5"></script>
-<script src="js/core/offset.js?v=5"></script>
-<script src="js/io/svgio.js?v=5"></script>
-<script src="js/render/view.js?v=5"></script>
-<script src="js/render/hittest.js?v=5"></script>
-<script src="js/core/edit.js?v=5"></script>
-<script src="js/tools/drag.js?v=5"></script>
-<script src="js/tools/transform.js?v=5"></script>
-<script src="js/tools/shapes.js?v=5"></script>
-<script src="js/tools/tools.js?v=5"></script>
-<script src="js/ui/dialogs.js?v=5"></script>
-<script src="js/ui/mouse.js?v=5"></script>
-<script src="js/ui/keyboard.js?v=5"></script>
-<script src="js/io/clipboard.js?v=5"></script>
-<script src="js/io/files.js?v=5"></script>
-<script src="js/ui/panels.js?v=5"></script>
-<script src="js/ui/help.js?v=5"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/vendor/paper-core.min.js?v=6"></script>
+<script src="js/vendor/clipper.js?v=6"></script>
+<script src="js/core/geom.js?v=6"></script>
+<script src="js/core/config.js?v=6"></script>
+<script src="js/core/state.js?v=6"></script>
+<script src="js/core/document.js?v=6"></script>
+<script src="js/core/selection.js?v=6"></script>
+<script src="js/core/history.js?v=6"></script>
+<script src="js/core/prefs.js?v=6"></script>
+<script src="js/core/snap.js?v=6"></script>
+<script src="js/core/pathfinder.js?v=6"></script>
+<script src="js/core/offset.js?v=6"></script>
+<script src="js/io/svgio.js?v=6"></script>
+<script src="js/render/view.js?v=6"></script>
+<script src="js/render/hittest.js?v=6"></script>
+<script src="js/core/edit.js?v=6"></script>
+<script src="js/tools/drag.js?v=6"></script>
+<script src="js/tools/transform.js?v=6"></script>
+<script src="js/tools/shapes.js?v=6"></script>
+<script src="js/tools/tools.js?v=6"></script>
+<script src="js/ui/dialogs.js?v=6"></script>
+<script src="js/ui/mouse.js?v=6"></script>
+<script src="js/ui/keyboard.js?v=6"></script>
+<script src="js/io/clipboard.js?v=6"></script>
+<script src="js/io/files.js?v=6"></script>
+<script src="js/io/aama.js?v=6"></script>
+<script src="js/io/pattern-sample.js?v=6"></script>
+<script src="js/ui/panels.js?v=6"></script>
+<script src="js/ui/pattern.js?v=6"></script>
+<script src="js/ui/help.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>

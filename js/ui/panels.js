@@ -84,13 +84,14 @@ function updateUI() {
   document.querySelectorAll('[data-pf]').forEach((b) => { b.disabled = tops.length < (b.dataset.pf === 'divide' || b.dataset.pf === 'trim' ? 1 : 2); });
   renderLayers();
   $('fileName').textContent = S.fileName;
-  document.title = S.fileName + ' - イラレCAD';
+  document.title = S.fileName + ' - アパレルCAD';
   $('btnUndo').disabled = !canUndo();
   $('btnRedo').disabled = !canRedo();
   $('btnOutline').classList.toggle('on', S.outline);
   showToolStatus();
   $('alignTo').value = S.alignTo;
   $('btnOffset').disabled = !items.length;
+  updatePatternPanel();
   const flags = [];
   if (S.smart) flags.push('スマートガイド');
   if (S.snapGrid) flags.push('グリッドにスナップ');
@@ -230,7 +231,7 @@ $('alignTo').addEventListener('change', (e) => {
 $('btnOffset').addEventListener('click', openOffsetDialog);
 
 const COMMANDS = {
-  new: newDocument, open: openFile, save: () => save(false), saveAs: () => save(true), exportSvg: exportSvgFile,
+  new: newDocument, open: openFile, save: () => save(false), saveAs: () => save(true), exportSvg: exportSvgFile, exportAama: () => exportAamaFile(),
   undo, redo, outline: toggleOutline, fit: fitView, help: () => toggleHelp(true), prefs: openPrefs,
 };
 document.querySelectorAll('[data-cmd]').forEach((b) => b.addEventListener('click', () => COMMANDS[b.dataset.cmd]()));

@@ -188,3 +188,8 @@ button.primary:hover { background: #6a95ff; }
   padding: 8px 14px; border-radius: 4px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 60; max-width: 80vw;
 }
 #toast.show { opacity: .92; }
+
+/* 型紙パネル */
+#patRole, #patNotchMode, #patEncoding { flex: 1; min-width: 0; }
+#patName { flex: 1; min-width: 0; }
+#btnAama { flex: 1; }

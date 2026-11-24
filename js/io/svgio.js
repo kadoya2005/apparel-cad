@@ -162,7 +162,14 @@ function shapeToItem(el, ctx) {
     rule: cs.fillRule === 'evenodd' ? 'evenodd' : 'nonzero',
     hidden: cs.display === 'none',
     locked: el.getAttribute('data-locked') === 'true',
+    ...readPatAttr(el),
   };
+}
+// 型紙の情報（線の役割・パーツ名・枚数）は data-pat に JSON で残す
+function readPatAttr(el) {
+  const s = el.getAttribute('data-pat');
+  if (!s) return {};
+  try { const o = JSON.parse(s); return o && typeof o === 'object' ? { pat: o } : {}; } catch (_) { return {}; }
 }
 
 // 子要素を読み込んで、パスとグループの木にする
@@ -175,7 +182,7 @@ function parseNodes(parent, ctx) {
       if (!kids.length) continue;
       out.push({
         type: 'group', id: ch.getAttribute('data-icad-id') || uid(), name: ch.getAttribute('data-name') || '', children: kids,
-        hidden: getComputedStyle(ch).display === 'none', locked: ch.getAttribute('data-locked') === 'true',
+        hidden: getComputedStyle(ch).display === 'none', locked: ch.getAttribute('data-locked') === 'true', ...readPatAttr(ch),
       });
     } else if (SHAPE_TAGS.includes(tag)) {
       const it = shapeToItem(ch, ctx);
@@ -247,7 +254,8 @@ const svgEsc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').rep
 
 function nodeToSVG(n, ind) {
   // data-icad-id：読み込み直しても ID が変わらないように（3D の断面が ID で参照するため）
-  const extra = ` data-icad-id="${svgEsc(n.id)}"` + (n.locked ? ' data-locked="true"' : '') + (n.hidden ? ' style="display:none"' : '');
+  const extra = ` data-icad-id="${svgEsc(n.id)}"` + (n.locked ? ' data-locked="true"' : '') + (n.hidden ? ' style="display:none"' : '')
+    + (n.pat ? ` data-pat="${svgEsc(JSON.stringify(n.pat))}"` : '');
   if (n.type === 'group') {
     const name = n.name ? ` data-name="${svgEsc(n.name)}"` : '';
     return `${ind}<g${name}${extra}>\n` + n.children.map((c) => nodeToSVG(c, ind + '  ')).join('') + `${ind}</g>\n`;

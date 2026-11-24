@@ -1,7 +1,7 @@
 'use strict';
 // イラレCAD：設定値・ツールの一覧
 
-// イラレCAD 2D 試作：画面・ツール・ショートカット
+// アパレルCAD（illust-cad の2D版がもと）：画面・ツール・ショートカット
 
 const DOC_VERSION = 2;         // ドキュメント（.icad）の形の版
 const PT_PER_MM = 72 / 25.4;   // 1mm = 2.8346pt
@@ -28,9 +28,10 @@ const TOOLS_META = {
   zoom: { name: 'ズームツール', key: 'Z', hint: 'クリックで拡大／Alt+クリックで縮小' },
 };
 const ZOOMS = [0.03125, 0.0625, 0.125, 0.1667, 0.25, 0.3333, 0.5, 0.6667, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64];
-const AUTOSAVE_DOC = 'illustcad.autosave.doc';
-const AUTOSAVE_NAME = 'illustcad.autosave.name';
-const PREFS_KEY = 'illustcad.prefs';
+// イラレCAD と同じ場所（file://）で開いても混ざらないよう、アパレルCAD は別の名前で残す
+const AUTOSAVE_DOC = 'apparelcad.autosave.doc';
+const AUTOSAVE_NAME = 'apparelcad.autosave.name';
+const PREFS_KEY = 'apparelcad.prefs';
 const RULER = 20;              // 定規の太さ（px）
 const GRID_MAJOR = 72;         // グリッド：72pt ごとに太線
 const GRID_DIV = 8;            // その中を 8 分割
