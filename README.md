@@ -5,10 +5,13 @@ Illustrator と同じ操作で服の型紙を引くための CAD です。
 
 **すぐ試す：https://kadoya2005.github.io/apparel-cad/** （ブラウザで開くだけ。インストール不要）
 
+- 見本を開いて試す：[タイトスカート](https://kadoya2005.github.io/apparel-cad/?sample=tight)／[フレアスカート](https://kadoya2005.github.io/apparel-cad/?sample=flare)
+- マニュアル：https://kadoya2005.github.io/apparel-cad-manual/ （[見本ができるまで](https://kadoya2005.github.io/apparel-cad-manual/tutorial.html)・PDF もあり）
+
 - Adobe Illustrator とは関係のない、非公式のツールです
 - 型紙は公開されている規格（AAMA/ASTM の DXF）で書き出します。ほかの型紙CAD（例：東レACS の CREACOMPO II）とのやり取りは**非公式**で、各社の専用形式は扱いません
 
-**マニュアル**：[manual/index.html](manual/index.html)（概要・使い方ガイド・画面の場所。キャプチャと図つき）
+**マニュアルの原稿**：[manual/](manual/)（概要・クイックスタート・見本ができるまで・使い方ガイド・画面の場所と、その PDF）
 
 ## 型紙（AAMA DXF）
 
@@ -29,6 +32,10 @@ Illustrator と同じ操作で服の型紙を引くための CAD です。
 - **名前・枚数**：型紙の中のパスを1つ選んで入れます。名前は「Piece Name:」の文字で渡します。日本語の名前は Shift_JIS（標準）か UTF-8 を選べます。ブロック名は半角英数字にします（日本語の名前のときは PIECE1, PIECE2…）
 - 座標の原点はアートボードの左下です（y は上向き）
 - 「見本を開く」で、タイトスカートの前・後ろ（半身）の見本が開きます
+
+### 縫い代
+
+縫い線を選んで型紙パネルの「縫い代…」を押し、幅（mm）を入れると、外側に輪郭（裁断線）ができます。同じ型紙に輪郭があれば作り直します（角はマイター）。
 
 ### 切り開き（パターン展開）
 

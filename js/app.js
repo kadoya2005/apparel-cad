@@ -19,6 +19,10 @@ function init() {
   if (saved) { doc = saved.doc; if (saved.name) S.fileName = saved.name; }
   normalizeDoc(); ensureActiveLayer(); resetHistory();
   buildHelp();
+  // URL の ?sample=tight ／ ?sample=flare で見本を開く（マニュアルのリンク用）
+  const sample = new URLSearchParams(location.search).get('sample');
+  if (sample === 'tight') setDocument(patternSampleDoc(), '見本の型紙.icad', null, 0);
+  else if (sample === 'flare') setDocument(patternSampleFlareDoc(), 'フレアスカートの見本.icad', null, 0);
   fitView(); render(); updateUI(); updateCursor();
   window.addEventListener('resize', () => renderView());
   // キーボードの配列（日本語か英語か）を調べる。分からなければ日本語として扱う

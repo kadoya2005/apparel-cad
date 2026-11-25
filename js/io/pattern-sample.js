@@ -46,3 +46,27 @@ function patternSampleDoc(opts = {}) {
   L.items.push(piece(names[0], 30, 50, false), piece(names[1], 520, 50, true));
   return d;
 }
+
+// フレアスカートの見本：タイトスカートの前・後ろに切り開き線を 2 本ずつ引き、60mm ずつ開いたもの
+function patternSampleFlareDoc() {
+  const d = patternSampleDoc();
+  const K = PT_PER_MM;
+  const keep = doc;
+  doc = d;   // 切り開きはいまのドキュメントの中で線を探すので、一時的に入れ替える
+  try {
+    const slash = (ox, mirror, x, wy) => {
+      const tf = (px, py) => P((ox + (mirror ? 245 - px : px)) * K, (50 + py) * K);
+      const a = tf(x, 600), b = tf(x, wy);
+      return { id: uid(), subs: [{ nodes: [mkNode(a.x, a.y), mkNode(b.x, b.y)], closed: false }], fill: null, stroke: SLASH_COLOR, sw: 1.5, rule: 'nonzero', hidden: false, locked: false, pat: { role: 'slash' } };
+    };
+    const [front, back] = d.layers[0].items;
+    front.children.push(slash(30, false, 80, 9), slash(30, false, 160, 5));
+    back.children.push(slash(520, true, 80, 9), slash(520, true, 160, 5));
+    spreadPiece(front, 60 * K, 10 * K);
+    spreadPiece(back, 60 * K, 10 * K);
+    // 広がった分、後ろを右へずらして重ならないようにする
+    leaves([back]).forEach((it) => mapItem(it, (q) => P(q.x + 80 * K, q.y)));
+    d.width = 1000 * K;
+  } finally { doc = keep; }
+  return d;
+}

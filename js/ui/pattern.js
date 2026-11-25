@@ -60,6 +60,7 @@ function updatePatternPanel() {
   });
   $('btnAama').addEventListener('click', exportAamaFile);
   $('btnSpread').addEventListener('click', openSpreadDialog);
+  $('btnSeam').addEventListener('click', openSeamDialog);
   $('btnPatSample').addEventListener('click', () => {
     if (allItems().length && !confirm('見本の型紙を開きますか？\n保存していない変更は消えます。')) return;
     setDocument(patternSampleDoc(), '見本の型紙.icad', null, 0);
@@ -94,6 +95,45 @@ function openSpreadDialog() {
           toast(`切り開きました（${r.count} 本・1本あたり ${Math.round(r.deg * 10) / 10}°）`);
         }
       } catch (err) { if (!pv) toast('切り開けませんでした：' + err.message); }
+    },
+  });
+}
+
+// ---- 縫い代：縫い線の外側に輪郭（裁断線）を作る ----
+// 選んだ閉じたパス（役割が縫い線か、まだ決めていないもの）が対象。
+// 同じグループに輪郭があれば作り直し、なければ縫い線のすぐ下に新しく作る
+function seamTargets() {
+  return selectedItems().filter((it) => ['sew', ''].includes(patRoleOf(it)) && it.subs.some((s) => s.closed && s.nodes.length >= 2));
+}
+function addSeamAllowance(seamPt) {
+  let made = 0;
+  for (const it of seamTargets()) {
+    const f = findItem(it.id);
+    if (!f) continue;
+    it.pat = it.pat || {};
+    it.pat.role = 'sew';
+    const sb = it.subs.find((s) => s.closed && s.nodes.length >= 2);
+    const subs = [seamOffsetSub(sb, seamPt)];
+    const cut = f.ancestors.length ? f.parent.find((n) => !isGroup(n) && patRoleOf(n) === 'cut') : null;
+    if (cut) cut.subs = subs;
+    else f.parent.splice(f.index, 0, { id: uid(), subs, fill: null, stroke: '#000000', sw: 1, rule: 'nonzero', hidden: false, locked: false, pat: { role: 'cut' } });
+    made++;
+  }
+  return made;
+}
+function openSeamDialog() {
+  if (!seamTargets().length) { toast('縫い線（閉じたパス）を選んでください'); return; }
+  const last = S.dlgLast.seam || { seam: 10 };
+  openDialog({
+    title: '縫い代を付ける',
+    fields: [{ id: 'seam', label: '縫い代', value: last.seam, unit: 'mm（縫い線の外側に輪郭を作る）' }],
+    copy: false,
+    apply: (v, copy, pv) => {
+      if (!(v.seam > 0)) { if (!pv) toast('縫い代は 0 より大きくしてください'); return; }
+      try {
+        const n = addSeamAllowance(v.seam * PT_PER_MM);
+        if (!pv) { S.dlgLast.seam = v; commit(); toast(`輪郭を作りました（縫い代 ${v.seam}mm・${n} 本）`); }
+      } catch (err) { if (!pv) toast('縫い代を付けられませんでした：' + err.message); }
     },
   });
 }
