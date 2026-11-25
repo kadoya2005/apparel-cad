@@ -6,7 +6,7 @@ Illustrator と同じ操作で服の型紙を引くための CAD です。
 **すぐ試す：https://kadoya2005.github.io/apparel-cad/** （ブラウザで開くだけ。インストール不要）
 
 - 見本を開いて試す：[タイトスカート](https://kadoya2005.github.io/apparel-cad/?sample=tight)／[フレアスカート](https://kadoya2005.github.io/apparel-cad/?sample=flare)
-- マニュアル：https://kadoya2005.github.io/apparel-cad-manual/ （[見本ができるまで](https://kadoya2005.github.io/apparel-cad-manual/tutorial.html)・PDF もあり）
+- マニュアル：https://kadoya2005.github.io/apparel-cad/manual/ （[見本ができるまで](https://kadoya2005.github.io/apparel-cad/manual/tutorial.html)・PDF もあり）
 
 - Adobe Illustrator とは関係のない、非公式のツールです
 - 型紙は公開されている規格（AAMA/ASTM の DXF）で書き出します。ほかの型紙CAD（例：東レACS の CREACOMPO II）とのやり取りは**非公式**で、各社の専用形式は扱いません
