@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>アパレルCAD</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 <header id="topbar">
-  <div class="brand">アパレルCAD <span class="ver">ver 6・型紙の試作</span></div>
+  <div class="brand">アパレルCAD <span class="ver">ver 10・型紙の試作</span></div>
   <div class="menu">
     <button data-cmd="new">新規</button>
     <button data-cmd="open" title="Ctrl+O">開く</button>
@@ -86,6 +86,7 @@
     <div class="row"><label>枚数</label><input type="number" id="patQty" min="1" step="1" title="裁断する枚数"></div>
     <div class="row"><label>合印</label><select id="patNotchMode" title="ノッチの書き出し方"><option value="point">点（AAMA の標準）</option><option value="line">線（切り込みの向きつき）</option></select></div>
     <div class="row"><label>文字</label><select id="patEncoding" title="パーツ名などの文字コード"><option value="sjis">Shift_JIS（日本語の名前）</option><option value="utf8">UTF-8</option></select></div>
+    <div class="row"><button id="btnSpread" title="選んだ型紙を、切り開き線のところで開いて広げる（例：タイトスカート → フレアスカート）">切り開き…</button></div>
     <div class="row"><button id="btnAama" class="primary" title="型紙を AAMA DXF（mm）にする">AAMA DXF 書き出し</button></div>
     <p class="note">1つのグループが1枚の型紙です。役割を決めていないときは、いちばん大きい閉じたパスが輪郭、ほかは内部線になります</p>
   </section>
@@ -211,36 +212,37 @@
   ui     … マウス・キーボード・パネル・ダイアログ
   io     … ファイルとクリップボード
 -->
-<script src="js/vendor/paper-core.min.js?v=6"></script>
-<script src="js/vendor/clipper.js?v=6"></script>
-<script src="js/core/geom.js?v=6"></script>
-<script src="js/core/config.js?v=6"></script>
-<script src="js/core/state.js?v=6"></script>
-<script src="js/core/document.js?v=6"></script>
-<script src="js/core/selection.js?v=6"></script>
-<script src="js/core/history.js?v=6"></script>
-<script src="js/core/prefs.js?v=6"></script>
-<script src="js/core/snap.js?v=6"></script>
-<script src="js/core/pathfinder.js?v=6"></script>
-<script src="js/core/offset.js?v=6"></script>
-<script src="js/io/svgio.js?v=6"></script>
-<script src="js/render/view.js?v=6"></script>
-<script src="js/render/hittest.js?v=6"></script>
-<script src="js/core/edit.js?v=6"></script>
-<script src="js/tools/drag.js?v=6"></script>
-<script src="js/tools/transform.js?v=6"></script>
-<script src="js/tools/shapes.js?v=6"></script>
-<script src="js/tools/tools.js?v=6"></script>
-<script src="js/ui/dialogs.js?v=6"></script>
-<script src="js/ui/mouse.js?v=6"></script>
-<script src="js/ui/keyboard.js?v=6"></script>
-<script src="js/io/clipboard.js?v=6"></script>
-<script src="js/io/files.js?v=6"></script>
-<script src="js/io/aama.js?v=6"></script>
-<script src="js/io/pattern-sample.js?v=6"></script>
-<script src="js/ui/panels.js?v=6"></script>
-<script src="js/ui/pattern.js?v=6"></script>
-<script src="js/ui/help.js?v=6"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/vendor/paper-core.min.js?v=10"></script>
+<script src="js/vendor/clipper.js?v=10"></script>
+<script src="js/core/geom.js?v=10"></script>
+<script src="js/core/config.js?v=10"></script>
+<script src="js/core/state.js?v=10"></script>
+<script src="js/core/document.js?v=10"></script>
+<script src="js/core/selection.js?v=10"></script>
+<script src="js/core/history.js?v=10"></script>
+<script src="js/core/prefs.js?v=10"></script>
+<script src="js/core/snap.js?v=10"></script>
+<script src="js/core/pathfinder.js?v=10"></script>
+<script src="js/core/offset.js?v=10"></script>
+<script src="js/core/spread.js?v=10"></script>
+<script src="js/io/svgio.js?v=10"></script>
+<script src="js/render/view.js?v=10"></script>
+<script src="js/render/hittest.js?v=10"></script>
+<script src="js/core/edit.js?v=10"></script>
+<script src="js/tools/drag.js?v=10"></script>
+<script src="js/tools/transform.js?v=10"></script>
+<script src="js/tools/shapes.js?v=10"></script>
+<script src="js/tools/tools.js?v=10"></script>
+<script src="js/ui/dialogs.js?v=10"></script>
+<script src="js/ui/mouse.js?v=10"></script>
+<script src="js/ui/keyboard.js?v=10"></script>
+<script src="js/io/clipboard.js?v=10"></script>
+<script src="js/io/files.js?v=10"></script>
+<script src="js/io/aama.js?v=10"></script>
+<script src="js/io/pattern-sample.js?v=10"></script>
+<script src="js/ui/panels.js?v=10"></script>
+<script src="js/ui/pattern.js?v=10"></script>
+<script src="js/ui/help.js?v=10"></script>
+<script src="js/app.js?v=10"></script>
 </body>
 </html>

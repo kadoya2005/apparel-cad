@@ -23,7 +23,8 @@ function insertNode(it, s, seg, t) {
   const a = n[seg], b = n[(seg + 1) % L];
   let nn;
   if (Geo.isLine(sb, seg)) {
-    const m = vlerp(a, b, t);
+    // t は Geo.nearest と同じ数え方（直線も [a, a, b, b] の曲線として測った t）なので、同じ式で位置を出す
+    const m = cubicAt(a, a, b, b, t);
     nn = mkNode(m.x, m.y);
   } else {
     const [l, r] = splitCubic(...Geo.seg(sb, seg), t);

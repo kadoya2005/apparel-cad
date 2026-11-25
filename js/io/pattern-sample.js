@@ -5,7 +5,7 @@
 function patternSampleDoc(opts = {}) {
   const names = opts.ascii ? ['FRONT', 'BACK'] : ['前スカート', '後ろスカート'];
   const K = PT_PER_MM;
-  const W = 600, Hh = 700;   // アートボード（mm）
+  const W = 900, Hh = 700;   // アートボード（mm）。切り開いて広げても重ならないよう、横は広め
   const d = newDoc();
   d.width = W * K; d.height = Hh * K;
   const L = d.layers[0];
@@ -43,6 +43,6 @@ function patternSampleDoc(opts = {}) {
     const n2 = path([node(-10, 190), node(-5, 190)], false, 'notch', '#000000', 1);
     return { type: 'group', id: uid(), name, pat: { name, qty: 1 }, hidden: false, locked: false, children: [cut, sew, dart, grain, n1, n2] };
   };
-  L.items.push(piece(names[0], 30, 50, false), piece(names[1], 320, 50, true));
+  L.items.push(piece(names[0], 30, 50, false), piece(names[1], 520, 50, true));
   return d;
 }

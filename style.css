@@ -193,3 +193,4 @@ button.primary:hover { background: #6a95ff; }
 #patRole, #patNotchMode, #patEncoding { flex: 1; min-width: 0; }
 #patName { flex: 1; min-width: 0; }
 #btnAama { flex: 1; }
+#btnSpread { flex: 1; }

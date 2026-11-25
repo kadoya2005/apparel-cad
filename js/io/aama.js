@@ -4,7 +4,7 @@
 // 型紙のまとめ方
 //   ・1つのグループ ＝ 1枚の型紙（パーツ）。グループに入っていない閉じたパスも、それだけで1枚
 //   ・グループに入っていない開いたパス（ノッチや布目線など）は、その線が上にある型紙に入れる
-//   ・パスの役割は item.pat.role：'cut' 輪郭（裁断線）／'sew' 縫い線／'internal' 内部線／'grain' 布目線／'notch' ノッチ
+//   ・パスの役割は item.pat.role：'cut' 輪郭（裁断線）／'sew' 縫い線／'internal' 内部線／'grain' 布目線／'notch' ノッチ／'slash' 切り開き線（書き出さない）
 //     役割がないときは、いちばん大きい閉じたパスを輪郭、ほかを内部線とみなす
 //   ・パーツ名と枚数は、グループ（またはパス）の pat.name・pat.qty。名前がなければグループ名
 //
@@ -18,6 +18,7 @@ const AAMA_LAYERS = { cut: '1', turn: '2', curve: '3', notch: '4', grain: '7', i
 const PAT_ROLES = [
   ['', '自動'], ['cut', '輪郭（裁断線）'], ['sew', '縫い線'],
   ['internal', '内部線'], ['grain', '布目線'], ['notch', 'ノッチ（合印）'],
+  ['slash', '切り開き線（書き出さない）'],
 ];
 const FLAT_TOL_MM = 0.02;      // 曲線を折れ線にするときの許容のずれ（mm）
 
@@ -236,7 +237,7 @@ function buildAamaDxf(d, opts = {}) {
     // ほかの線
     pc.items.forEach((it, j) => {
       const role = pc.roles[j];
-      if (role === 'cut') return;
+      if (role === 'cut' || role === 'slash') return;   // 切り開き線は作図用なので書き出さない
       for (const sb of it.subs) {
         if (sb.nodes.length < 1) continue;
         const pts = aamaFlatten(sb).map(mm);
