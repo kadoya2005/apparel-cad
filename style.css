@@ -194,3 +194,18 @@ button.primary:hover { background: #6a95ff; }
 #patName { flex: 1; min-width: 0; }
 #btnAama { flex: 1; }
 #btnSpread, #btnSeam { flex: 1; }
+
+/* 立体プレビュー（動かせる窓。開いたまま型紙を直せる） */
+.p3 { position: fixed; right: 16px; bottom: 16px; width: min(440px, calc(100vw - 32px)); background: var(--panel); border: 1px solid #555; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.45); z-index: 40; display: flex; flex-direction: column; }
+.p3[hidden] { display: none; }
+.p3Head { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--line); cursor: move; user-select: none; }
+.p3Head b { font-size: 13px; }
+.p3Scope { flex: 1; font-size: 11px; opacity: .7; }
+#p3Canvas { width: 100%; height: min(460px, calc(100vh - 260px)); display: block; cursor: grab; touch-action: none; }
+#p3Canvas:active { cursor: grabbing; }
+.p3Views { display: flex; gap: 4px; padding: 6px 8px 0; }
+.p3Ctl { display: flex; flex-wrap: wrap; gap: 6px 10px; padding: 6px 8px; font-size: 12px; align-items: center; }
+.p3Ctl label { display: flex; align-items: center; gap: 4px; }
+.p3Ctl input[type=number] { width: 56px; }
+.p3Ctl input[type=range] { width: 90px; }
+.p3 .note { margin: 0 8px 8px; }

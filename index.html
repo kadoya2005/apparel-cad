@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>アパレルCAD</title>
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <header id="topbar">
-  <div class="brand">アパレルCAD <span class="ver">ver 11・型紙の試作</span></div>
+  <div class="brand">アパレルCAD <span class="ver">ver 12・型紙の試作</span></div>
   <div class="menu">
     <button data-cmd="new">新規</button>
     <button data-cmd="open" title="Ctrl+O">開く</button>
@@ -87,6 +87,7 @@
     <div class="row"><label>合印</label><select id="patNotchMode" title="ノッチの書き出し方"><option value="point">点（AAMA の標準）</option><option value="line">線（切り込みの向きつき）</option></select></div>
     <div class="row"><label>文字</label><select id="patEncoding" title="パーツ名などの文字コード"><option value="sjis">Shift_JIS（日本語の名前）</option><option value="utf8">UTF-8</option></select></div>
     <div class="row"><button id="btnSeam" title="選んだ縫い線の外側に、縫い代の幅で輪郭（裁断線）を作る">縫い代…</button><button id="btnSpread" title="選んだ型紙を、切り開き線のところで開いて広げる（例：タイトスカート → フレアスカート）">切り開き…</button></div>
+    <div class="row"><button id="btnPreview3d" title="素体にスカートを着せた形を立体で見る（だいたいの形）">立体プレビュー</button></div>
     <div class="row"><button id="btnAama" class="primary" title="型紙を AAMA DXF（mm）にする">AAMA DXF 書き出し</button></div>
     <p class="note">1つのグループが1枚の型紙です。役割を決めていないときは、いちばん大きい閉じたパスが輪郭、ほかは内部線になります</p>
   </section>
@@ -204,6 +205,21 @@
 <div id="toast"></div>
 <input type="file" id="fileInput" accept=".icad,.svg,image/svg+xml,application/json" hidden>
 
+<div id="preview3d" class="p3" hidden>
+  <div class="p3Head"><b>立体プレビュー（だいたいの形）</b><span id="p3Scope" class="p3Scope"></span><button id="p3Close" class="small" title="閉じる">×</button></div>
+  <canvas id="p3Canvas" title="ドラッグで回す・ホイールで拡大"></canvas>
+  <div class="p3Views"><button class="small" data-p3view="front">前</button><button class="small" data-p3view="diag">斜め</button><button class="small" data-p3view="side">横</button><button class="small" data-p3view="back">後ろ</button></div>
+  <div class="p3Ctl">
+    <label>ウエスト<input type="number" id="p3Waist" step="0.5" min="30"><span>cm</span></label>
+    <label>ヒップ<input type="number" id="p3Hip" step="0.5" min="40"><span>cm</span></label>
+    <label>腰丈<input type="number" id="p3HipLen" step="0.5" min="10"><span>cm</span></label>
+    <button id="p3Fit" class="small" title="素体の寸法を、いまの型紙に合わせる（ゆとり ウエスト1cm・ヒップ4cm）">型紙に合わせる</button>
+    <label title="余った布のうち、外へ広がる割合（大きいほど張りのある布）">張り<input type="range" id="p3Stiff" min="0" max="100"></label>
+    <label title="フレアの波の数">ひだ<input type="range" id="p3Folds" min="4" max="16"></label>
+    <label>色<input type="color" id="p3Color"></label>
+  </div>
+  <p id="p3Note" class="note"></p>
+</div>
 <!--
   読み込み順に意味があります（ビルドなし・file:// で動かすため、ふつうの script をこの順で読む）
   core   … データと計算（画面に依存しない）
@@ -212,37 +228,39 @@
   ui     … マウス・キーボード・パネル・ダイアログ
   io     … ファイルとクリップボード
 -->
-<script src="js/vendor/paper-core.min.js?v=11"></script>
-<script src="js/vendor/clipper.js?v=11"></script>
-<script src="js/core/geom.js?v=11"></script>
-<script src="js/core/config.js?v=11"></script>
-<script src="js/core/state.js?v=11"></script>
-<script src="js/core/document.js?v=11"></script>
-<script src="js/core/selection.js?v=11"></script>
-<script src="js/core/history.js?v=11"></script>
-<script src="js/core/prefs.js?v=11"></script>
-<script src="js/core/snap.js?v=11"></script>
-<script src="js/core/pathfinder.js?v=11"></script>
-<script src="js/core/offset.js?v=11"></script>
-<script src="js/core/spread.js?v=11"></script>
-<script src="js/io/svgio.js?v=11"></script>
-<script src="js/render/view.js?v=11"></script>
-<script src="js/render/hittest.js?v=11"></script>
-<script src="js/core/edit.js?v=11"></script>
-<script src="js/tools/drag.js?v=11"></script>
-<script src="js/tools/transform.js?v=11"></script>
-<script src="js/tools/shapes.js?v=11"></script>
-<script src="js/tools/tools.js?v=11"></script>
-<script src="js/ui/dialogs.js?v=11"></script>
-<script src="js/ui/mouse.js?v=11"></script>
-<script src="js/ui/keyboard.js?v=11"></script>
-<script src="js/io/clipboard.js?v=11"></script>
-<script src="js/io/files.js?v=11"></script>
-<script src="js/io/aama.js?v=11"></script>
-<script src="js/io/pattern-sample.js?v=11"></script>
-<script src="js/ui/panels.js?v=11"></script>
-<script src="js/ui/pattern.js?v=11"></script>
-<script src="js/ui/help.js?v=11"></script>
-<script src="js/app.js?v=11"></script>
+<script src="js/vendor/paper-core.min.js?v=12"></script>
+<script src="js/vendor/clipper.js?v=12"></script>
+<script src="js/core/geom.js?v=12"></script>
+<script src="js/core/config.js?v=12"></script>
+<script src="js/core/state.js?v=12"></script>
+<script src="js/core/document.js?v=12"></script>
+<script src="js/core/selection.js?v=12"></script>
+<script src="js/core/history.js?v=12"></script>
+<script src="js/core/prefs.js?v=12"></script>
+<script src="js/core/snap.js?v=12"></script>
+<script src="js/core/pathfinder.js?v=12"></script>
+<script src="js/core/offset.js?v=12"></script>
+<script src="js/core/spread.js?v=12"></script>
+<script src="js/core/drape.js?v=12"></script>
+<script src="js/io/svgio.js?v=12"></script>
+<script src="js/render/view.js?v=12"></script>
+<script src="js/render/hittest.js?v=12"></script>
+<script src="js/core/edit.js?v=12"></script>
+<script src="js/tools/drag.js?v=12"></script>
+<script src="js/tools/transform.js?v=12"></script>
+<script src="js/tools/shapes.js?v=12"></script>
+<script src="js/tools/tools.js?v=12"></script>
+<script src="js/ui/dialogs.js?v=12"></script>
+<script src="js/ui/mouse.js?v=12"></script>
+<script src="js/ui/keyboard.js?v=12"></script>
+<script src="js/io/clipboard.js?v=12"></script>
+<script src="js/io/files.js?v=12"></script>
+<script src="js/io/aama.js?v=12"></script>
+<script src="js/io/pattern-sample.js?v=12"></script>
+<script src="js/ui/panels.js?v=12"></script>
+<script src="js/ui/pattern.js?v=12"></script>
+<script src="js/ui/preview3d.js?v=12"></script>
+<script src="js/ui/help.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
 </body>
 </html>
