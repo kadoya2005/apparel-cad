@@ -116,7 +116,10 @@ function spreadPiece(group, openPt, seamPt) {
   const { base, sew, cut } = tg;
   if (!tg.slashes.length) throw new Error('切り開き線がありません（直線を引いて、役割を「切り開き線」にしてください）');
   if (!(openPt > 0)) throw new Error('開く量を 0 より大きくしてください');
-  const sb = base.subs.find((s) => s.closed);
+  // 失敗しても型紙が変わらないよう、写しの上で計算し、最後にまとめて書き戻す
+  const sb0 = base.subs.find((s) => s.closed);
+  const cpP = (q) => (q ? P(q.x, q.y) : null);
+  const sb = { nodes: sb0.nodes.map((n) => mkNode(n.x, n.y, cpP(n.hin), cpP(n.hout), n.smooth)), closed: true };
   const tmp = { subs: [sb] };
   const EPS = 0.05 * PT_PER_MM;
 
@@ -195,8 +198,13 @@ function spreadPiece(group, openPt, seamPt) {
     const li = nd.hin ? vdist(nd.hin, nd) : vdist(nd, pv) / 3, lo = nd.hout ? vdist(nd.hout, nd) : vdist(nx, nd) / 3;
     nd.hin = vsub(nd, vmul(dir, li)); nd.hout = vadd(nd, vmul(dir, lo));
   }
-  sb.nodes = out;
-  normalizeSub(sb);
+  const nsb = { nodes: out, closed: true };
+  normalizeSub(nsb);
+  // 輪郭（裁断線）も、書き戻す前に作っておく（縫い代 0 なら作らない）
+  const cutSub = sew && seamPt > 0 ? seamOffsetSub(nsb, seamPt) : null;
+
+  // ---- ここから型紙に書き戻す（この先はエラーにならない） ----
+  sb0.nodes = nsb.nodes;
 
   // ほかの線（内部線・布目線・ノッチ）は、のっている区画ごとそのまま動かす
   for (const it of tg.items) {
@@ -209,6 +217,13 @@ function spreadPiece(group, openPt, seamPt) {
   // 切り開き線は使い終わったので消す
   for (const s of sl) removeItem(s.it.id);
   // 輪郭（裁断線）を、新しい縫い線から作り直す
-  if (sew && cut) cut.subs = [seamOffsetSub(sb, seamPt)];
+  //   輪郭がまだなければ、縫い線のすぐ下に新しく作る
+  if (cutSub) {
+    if (cut) cut.subs = [cutSub];
+    else {
+      const f = findItem(sew.id);
+      if (f) f.parent.splice(f.index, 0, { id: uid(), subs: [cutSub], fill: null, stroke: '#000000', sw: 1, rule: 'nonzero', hidden: false, locked: false, pat: { role: 'cut' } });
+    }
+  }
   return { count: sl.length, deg: (sl[0].ang * 180) / Math.PI };
 }

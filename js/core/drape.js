@@ -3,7 +3,7 @@
 //
 // 考え方
 //   ・型紙ごとに、ウエストの線からの距離 s ごとの「横幅」を測る（ウエストから同じ距離の帯の面積 ÷ 帯の幅）。
-//     ダーツ（3点以上の開いた内部線）の中は布がないものとして除く。型紙は半身とみなし、2倍して一周の長さにする
+//     ダーツ（両端が縫い線の上にある、3点以上の開いた内部線）の中は布がないものとして除く。型紙は半身とみなし、2倍して一周の長さにする
 //   ・素体はウエスト・ヒップなどの寸法から、だ円の輪切りを重ねて作る
 //   ・スカートの輪切りは、素体（腰より下は腰の形）に少しゆとりを足した形。
 //     一周の長さが余るぶんは、一部を外へ広げ（張り）、残りを波（ひだ）にして長さを合わせる
@@ -40,11 +40,28 @@ function drapeMeasure(nodes) {
     // (u, v) に直す：v は布目に沿って下向き
     const toUV = (p) => ({ x: p.x * g.y - p.y * g.x, y: p.x * g.x + p.y * g.y });
     const poly = outline.map(toUV);
+    // ダーツ：内部線のうち、点が 3 つ以上の開いた線で、両端が縫い線の上（3mm 以内）にあり、
+    //   先（いちばん奥の点）までの深さが、両端の間の幅より大きいもの。ポケット位置などの線は除く
+    const segD = (p, a, b) => {
+      const vx = b.x - a.x, vy = b.y - a.y, L2 = vx * vx + vy * vy;
+      const t = L2 < 1e-12 ? 0 : Math.max(0, Math.min(1, ((p.x - a.x) * vx + (p.y - a.y) * vy) / L2));
+      return Math.hypot(p.x - a.x - vx * t, p.y - a.y - vy * t);
+    };
+    const onOutline = (p) => { for (let i = 0; i < outline.length; i++) if (segD(p, outline[i], outline[(i + 1) % outline.length]) <= 3) return true; return false; };
+    const isDart = (pts) => {
+      if (pts.length < 3) return false;
+      const a = pts[0], b = pts[pts.length - 1];
+      if (!onOutline(a) || !onOutline(b)) return false;
+      const depth = Math.max(...pts.map((p) => segD(p, a, b)));
+      return depth > Math.hypot(b.x - a.x, b.y - a.y);
+    };
     const darts = pc.items
       .filter((it) => roleOf(it) === 'internal')
       .map((it) => it.subs.find((s) => !s.closed && s.nodes.length >= 3))
       .filter(Boolean)
-      .map((sb) => aamaFlatten(sb).map(mm).map(toUV));
+      .map((sb) => aamaFlatten(sb).map(mm))
+      .filter(isDart)
+      .map((pts) => pts.map(toUV));
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     for (const p of poly) { x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y); }
     // ウエストの線：外向きの法線が上を向き、上のほうにある辺
@@ -80,7 +97,7 @@ function drapeMeasure(nodes) {
       }
       xs.sort((m, n) => m - n);
       for (let k = 0; k + 1 < xs.length; k += 2) {
-        for (let x = Math.ceil((xs[k] - x0) / h) * h + x0 + h / 2; x < xs[k + 1]; x += h) {
+        for (let x = Math.ceil((xs[k] - x0 - h / 2) / h) * h + x0 + h / 2; x < xs[k + 1]; x += h) {   // 格子の中心のうち、区間に入るもの
           const p = { x, y };
           if (darts.some((dp) => pointInPoly(p, dp))) continue;
           const bi = Math.floor(distW(p) / DRAPE_BAND);
@@ -193,7 +210,7 @@ function drapeBuild(meas, body, opt) {
   const folds = Math.max(2, Math.round(opt.folds));
   const stiff = opt.stiff;
   const rings = [];
-  let y = 0, prevRho = null;
+  let y = 0, prevRho = null, prevOff = null;
   const ds = meas.step;
   const shape = (a, b, off, amp) => {
     const pts = [];
@@ -226,19 +243,26 @@ function drapeBuild(meas, body, opt) {
       // 少しの余り（〜4cm）はゆとりとして浮かせる。それより多いぶんを、張りの割合で広げ、残りを波にする
       const EASE = 40;
       off = E0 + (Math.min(E, EASE) + stiff * Math.max(0, E - EASE)) / (2 * Math.PI);
+      // 布は上から垂れるので、外への広がりは下へ行って縮まない（腰で段がつかないように）
+      if (prevOff != null) off = Math.max(off, prevOff);
       const target = P;
-      // 波（極座標の波）は半径より小さければ交差しない。深すぎないよう 0.7 倍まで
-      const ampMax = (Math.min(a, b) + off) * 0.7;
-      let lo = 0, hi = ampMax;
+      // 波の谷が素体にめり込まない深さまで（腰より上は素体の 1mm 外。腰より下は脚のぶん少し内側まで）。
+      // 波（極座標の波）は半径より小さければ交差しないので、深すぎないよう 0.7 倍までにもする
+      const dMin = 1 - 18 * Math.max(0, Math.min(1, (hy - 55 - guessY) / 145));
+      const WMAX = 1.12;   // 波の形 w のいちばん深いところ
+      const ampLim = (o) => Math.max(0, Math.min((Math.min(a, b) + o) * 0.7, (o - dMin) / WMAX));
+      let lo = 0, hi = ampLim(off);
       if (perim(shape(a, b, off, hi)) < target) {
-        amp = hi;
-        const rest = target - perim(shape(a, b, off, hi));
-        off += rest / (2 * Math.PI);
+        // 波だけでは足りない：外へ広げて、そのぶん深くできる波と合わせて長さを合わせる
+        let ol = off, oh = off + (target - perim(shape(a, b, off, hi))) / (2 * Math.PI) + 1;
+        for (let k = 0; k < 22; k++) { const m = (ol + oh) / 2; if (perim(shape(a, b, m, ampLim(m))) < target) ol = m; else oh = m; }
+        off = (ol + oh) / 2; amp = ampLim(off);
       } else {
         for (let k = 0; k < 22; k++) { const m = (lo + hi) / 2; if (perim(shape(a, b, off, m)) < target) lo = m; else hi = m; }
         amp = (lo + hi) / 2;
       }
     }
+    prevOff = E < 0 ? null : off;
     const rho = (a + b) / 2 + off;
     if (i) {
       const dr = prevRho == null ? 0 : rho - prevRho;
