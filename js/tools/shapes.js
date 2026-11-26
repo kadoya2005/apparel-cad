@@ -81,6 +81,7 @@ function shapeDialog(kind, p, alt) {
 function setTool(t) {
   if (!TOOLS_META[t]) return;
   if (S.drawing && t !== 'pen' && t !== 'hand' && t !== 'zoom') endDrawing();
+  if (t !== S.tool) S.dimDraft = null;
   S.tool = t;
   if (SEL_TOOLS.has(t)) S.lastSelTool = t;
   if (!XF_TOOLS.has(t)) S.xfOrigin = null;

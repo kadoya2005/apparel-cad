@@ -15,7 +15,7 @@ function setDocument(d, name, handle, skipped) {
   doc = d;
   if (!doc.layers || !doc.layers.length) doc.layers = newDoc().layers;
   normalizeDoc();
-  S.sel.clear(); S.drawing = null; S.selGuide = null; S.xfOrigin = null;
+  S.sel.clear(); S.drawing = null; S.selGuide = null; S.xfOrigin = null; S.selDims.clear(); S.dimDraft = null;
   S.activeLayer = doc.layers[doc.layers.length - 1].id;
   S.fileName = name || '名称未設定.icad';
   // 読めなかった要素があるときは、上書き保存で消えないように別名保存にする

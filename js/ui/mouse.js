@@ -26,9 +26,10 @@ stage.addEventListener('pointermove', (e) => {
   if (S.drag) { Tools[S.activeTool].move(e, p, sp); drawOverlay(); }
   else {
     const t = effectiveTool(e);
-    S.hover = ['select', 'direct', 'eyedropper', 'addAnchor', 'convert', 'rotate'].includes(t) ? (hitItem(p) || {}).it?.id || null : null;
+    S.hover = ['select', 'direct', 'eyedropper', 'addAnchor', 'convert', 'rotate', 'dimLen', 'dimRad'].includes(t) ? (hitItem(p) || {}).it?.id || null : null;
     S.penHint = t === 'pen' ? penHint(p, e.altKey, sp) : '';
-    S.snapViz = ['pen', 'rect', 'ellipse', 'line'].includes(t) && !e.shiftKey ? snapPoint(p, cachedCands()).viz : null;
+    S.snapViz = ['pen', 'rect', 'ellipse', 'line'].includes(t) && !e.shiftKey ? snapPoint(p, cachedCands()).viz
+      : t === 'dim' && !(S.dimDraft && S.dimDraft.b) && !e.shiftKey ? dimSnap(p, false).viz : null;
     drawOverlay();
     updateCursor();
   }

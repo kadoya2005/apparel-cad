@@ -119,7 +119,8 @@ function spreadPiece(group, openPt, seamPt) {
   // 失敗しても型紙が変わらないよう、写しの上で計算し、最後にまとめて書き戻す
   const sb0 = base.subs.find((s) => s.closed);
   const cpP = (q) => (q ? P(q.x, q.y) : null);
-  const sb = { nodes: sb0.nodes.map((n) => mkNode(n.x, n.y, cpP(n.hin), cpP(n.hout), n.smooth)), closed: true };
+  const keepNid = (m, n) => { if (n.nid) m.nid = n.nid; return m; };   // 寸法がくっついているアンカーの目印を引き継ぐ
+  const sb = { nodes: sb0.nodes.map((n) => keepNid(mkNode(n.x, n.y, cpP(n.hin), cpP(n.hout), n.smooth), n)), closed: true };
   const tmp = { subs: [sb] };
   const EPS = 0.05 * PT_PER_MM;
 
@@ -173,14 +174,14 @@ function spreadPiece(group, openPt, seamPt) {
     const sIn = sectionOf(segMid(i - 1)), sOut = sectionOf(segMid(i));
     if (sIn === sOut) {
       const f = T[sIn], p = f(nd);
-      out.push(mkNode(p.x, p.y, mapP(f, nd.hin), mapP(f, nd.hout), nd.smooth));
+      out.push(keepNid(mkNode(p.x, p.y, mapP(f, nd.hin), mapP(f, nd.hout), nd.smooth), nd));
     } else if (isPivot(nd)) {
       const p = T[sIn](nd);
-      out.push(mkNode(p.x, p.y, mapP(T[sIn], nd.hin), mapP(T[sOut], nd.hout)));
+      out.push(keepNid(mkNode(p.x, p.y, mapP(T[sIn], nd.hin), mapP(T[sOut], nd.hout)), nd));
       smoothIdx.push(out.length - 1);
     } else {
       const a = T[sIn](nd), b = T[sOut](nd);
-      out.push(mkNode(a.x, a.y, mapP(T[sIn], nd.hin), null)); smoothIdx.push(out.length - 1);
+      out.push(keepNid(mkNode(a.x, a.y, mapP(T[sIn], nd.hin), null), nd)); smoothIdx.push(out.length - 1);
       out.push(mkNode(b.x, b.y, null, mapP(T[sOut], nd.hout))); smoothIdx.push(out.length - 1);
     }
   }

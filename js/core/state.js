@@ -39,6 +39,9 @@ const S = {
   drag: null,
   keys: { ctrl: false, alt: false, shift: false }, spaceDown: false,
   mouse: null, mouseScr: null, hover: null, penHint: '',
+  selDims: new Set(),        // 選んでいる寸法の ID
+  dimDraft: null,            // 寸法ツールで作っている途中
+  hideDims: false,           // 寸法を隠す
   marquee: null, handleHits: [], bboxHits: [],
   clipboard: null, clipText: null, pasteMode: 'center', pasteHandled: true,
   lastTransform: null,
